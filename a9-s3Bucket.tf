@@ -41,7 +41,7 @@ resource "aws_s3_bucket_public_access_block" "example_awspublic_link" {
 
 resource "aws_s3_bucket_public_access_block" "example_blog" {
   bucket = aws_s3_bucket.proje2blog.id
-  # depends_on = [ aws_s3_bucket_ownership_controls.example_awspublic_link ]
+  depends_on = [ aws_s3_bucket_ownership_controls.example_awspublic_link ]
 
   block_public_acls       = false
   block_public_policy     = false
@@ -70,7 +70,7 @@ resource "aws_s3_object" "sorry_awspublic_link" {
 
 resource "aws_s3_bucket_website_configuration" "failover_awspublic_link" {
   bucket = aws_s3_bucket.proje2_awspublic_link.id
-  # depends_on = [ aws_s3_bucket_ownership_controls.example_awspublic_link ]
+  depends_on = [ aws_s3_bucket_ownership_controls.example_awspublic_link ]
 
   index_document {
     suffix = "index.html"

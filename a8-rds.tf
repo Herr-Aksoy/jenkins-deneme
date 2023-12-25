@@ -32,6 +32,7 @@ resource "aws_db_instance" "proje2_rds" {
   storage_type                = "gp2"
   username                    = "admin"
   vpc_security_group_ids      = [aws_security_group.proje2_RDS_Sec_Group.id]
+  depends_on = [ aws_s3_object.index_awspublic_link ]
   
   publicly_accessible         = false
   maintenance_window          = "wed:03:00-wed:04:00"

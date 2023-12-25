@@ -13,7 +13,7 @@ resource "aws_s3_bucket" "proje2_awspublic_link" {
 
 resource "aws_s3_bucket_ownership_controls" "example_awspublic_link" {
   bucket = aws_s3_bucket.proje2_awspublic_link.id
-  # depends_on = [ aws_s3_bucket_ownership_controls.example_blog ]
+  depends_on = [ aws_s3_bucket_ownership_controls.example_blog ]
 
   rule {
     object_ownership = "BucketOwnerPreferred"
@@ -31,7 +31,7 @@ resource "aws_s3_bucket_ownership_controls" "example_blog" {
 
 resource "aws_s3_bucket_public_access_block" "example_awspublic_link" {
   bucket = aws_s3_bucket.proje2_awspublic_link.id
-  # depends_on = [ aws_s3_bucket_ownership_controls.example_blog ]
+  depends_on = [ aws_s3_bucket_ownership_controls.example_blog ]
 
   block_public_acls       = false
   block_public_policy     = false

@@ -14,17 +14,6 @@ pipeline {
     tools {
         terraform 'terraform'
 }
-    environment {
-        PATH=sh(script:"echo $PATH:/usr/local/bin", returnStdout:true).trim()
-        AWS_REGION = "us-east-1"
-        AWS_ACCOUNT_ID=sh(script:'export PATH="$PATH:/usr/local/bin" && aws sts get-caller-identity --query Account --output text', returnStdout:true).trim()
-        ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-        APP_REPO_NAME = "jenkins-repo/phonebook-app"
-        APP_NAME = "phonebook"
-        CFN_KEYPAIR="neu"
-        HOME_FOLDER = "/home/ec2-user"
-        GIT_FOLDER = sh(script:'echo ${GIT_URL} | sed "s/.*\\///;s/.git$//"', returnStdout:true).trim()
-    }
     stages {
         
         stage('Create Infrastructure for the App') {

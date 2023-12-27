@@ -40,7 +40,7 @@ resource "aws_autoscaling_policy" "example_policy" {
   policy_type             = "TargetTrackingScaling"
   estimated_instance_warmup = 300
 
-  autoscaling_group_name  = aws_autoscaling_group.proje2_ASG.name
+  autoscaling_group_name  = aws_autoscaling_group.proje2_ASG[count.index].name # isimler degistiginden. #aws_autoscaling_group.proje2_ASG.name
 
   target_tracking_configuration {
     predefined_metric_specification {

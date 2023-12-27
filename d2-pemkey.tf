@@ -17,9 +17,9 @@ resource "local_file" "Mykeypair" {
 }
 
 
-# locals {
-#   my_private_key_content = tls_private_key.rsa.private_key_pem
-# }
+locals {
+  my_private_key_content = tls_private_key.rsa.private_key_pem
+}
 
 # locals {
 #   my_private_key_content = tls_private_key.rsa.private_key_pem

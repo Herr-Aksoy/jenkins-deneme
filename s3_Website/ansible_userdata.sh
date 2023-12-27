@@ -64,7 +64,7 @@ chmod 400 ${pem_key}.pem
 #   - job_name: 'remote_collector'
 #     scrape_interval: 10s
 #     static_configs:
-#       - targets: ['${private_ip_value}:9100']
+#       - targets: ['private_ip_value:9100']
 # EOF"
 
 

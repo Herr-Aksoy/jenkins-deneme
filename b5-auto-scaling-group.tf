@@ -9,7 +9,7 @@ resource "aws_autoscaling_group" "proje2_ASG" {
   #health_check_grace_period = 300
 
   launch_template {
-    id      = aws_launch_template.proje2_launch_template.id
+    id      = aws_launch_template.proje2_launch_template[count.index].id
     version = "$Latest"  # Kullanılacak sürüm numarası
   }
 

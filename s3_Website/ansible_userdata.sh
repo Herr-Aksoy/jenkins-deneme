@@ -15,8 +15,8 @@ EOF"
 
 sudo bash -c "cat << EOF > /home/ec2-user/inventory
 [webservers]
-node1 ansible_host=${private_ip_value} ansible_user=ec2-user
-node2 ansible_host= ansible_user=ec2-user
+node1 ansible_host="Ec2 privat ip yazilacak" ansible_user=ec2-user
+node2 ansible_host="Ec2 privat ip yazilacak" ansible_user=ec2-user
 
 [all:vars]
 ansible_ssh_private_key_file=/home/ec2-user/${pem_key}.pem
@@ -26,8 +26,8 @@ EOF"
 
 cd /etc/ansible           ## Burada ansible.cfg  hosts  ve roles file lari var.
 sudo echo "[webservers]" >> hosts
-sudo echo "node1 ansible_host=${private_ip_value} ansible_user=ec2-user" >> hosts
-sudo echo "node2 ansible_host= ansible_user=ec2-user" >> hosts        ## Ec2 larin privar Ip leri eklenmeli.
+sudo echo "node1 ansible_host="Ec2 privat ip yazilacak" ansible_user=ec2-user" >> hosts
+sudo echo "node2 ansible_host="Ec2 privat ip yazilacak" ansible_user=ec2-user" >> hosts        ## Ec2 larin privar Ip leri eklenmeli.
 
 echo "[all:vars]" >> hosts
 echo "ansible_ssh_private_key_file=/home/ec2-user/${pem_key}.pem" >> hosts      ## Makinalarda ayni pemkey oldugundan bu yeterli.

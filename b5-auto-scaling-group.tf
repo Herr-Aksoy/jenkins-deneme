@@ -4,7 +4,6 @@ resource "aws_autoscaling_group" "proje2_ASG" {
   desired_capacity        = 1
   min_size                = 1
   max_size                = 2
-  count                   = 2
   #health_check_type       = "ELB"
   #health_check_grace_period = 300
 
@@ -29,7 +28,7 @@ resource "aws_autoscaling_group" "proje2_ASG" {
 
   tag {
     key                 = "Name"
-    value               = "WebApp${count.index + 1}"   #sirali sekilde isimlendirecek  #"proje2_ASG"
+    value               = "proje2_ASG"
     propagate_at_launch = true
   }
 
@@ -40,7 +39,7 @@ resource "aws_autoscaling_policy" "example_policy" {
   policy_type             = "TargetTrackingScaling"
   estimated_instance_warmup = 300
 
-  autoscaling_group_name  = aws_autoscaling_group.proje2_ASG[count.index].name # isimler degistiginden. #aws_autoscaling_group.proje2_ASG.name
+  autoscaling_group_name  = aws_autoscaling_group.proje2_ASG.name
 
   target_tracking_configuration {
     predefined_metric_specification {

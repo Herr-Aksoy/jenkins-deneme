@@ -25,6 +25,7 @@ resource "aws_autoscaling_group" "proje2_ASG" {
   lifecycle {
     create_before_destroy = true
   }
+  count = 4
 
   tag {
     key                 = "Name"

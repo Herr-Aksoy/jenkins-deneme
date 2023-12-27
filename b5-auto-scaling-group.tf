@@ -4,6 +4,7 @@ resource "aws_autoscaling_group" "proje2_ASG" {
   desired_capacity        = 1
   min_size                = 1
   max_size                = 2
+  count                   = 2
   #health_check_type       = "ELB"
   #health_check_grace_period = 300
 
@@ -25,7 +26,6 @@ resource "aws_autoscaling_group" "proje2_ASG" {
   lifecycle {
     create_before_destroy = true
   }
-  count = max(4)
 
   tag {
     key                 = "Name"

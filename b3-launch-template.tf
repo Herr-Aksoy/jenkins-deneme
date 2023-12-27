@@ -14,7 +14,7 @@ resource "aws_launch_template" "proje2_launch_template" {
 
   image_id      = "ami-055744c75048d8296"             ## degistir
   instance_type = "t2.micro"
-  key_name      = "neu"
+  key_name      = var.user_name     #"neu"
 
   iam_instance_profile {
     name = aws_iam_instance_profile.proje2_iam_profile.name
@@ -23,7 +23,6 @@ resource "aws_launch_template" "proje2_launch_template" {
   network_interfaces {
     security_groups = [aws_security_group.proje2_EC2_Sec_Group.id]
   }
-  count = 4
 
 
   tag_specifications {

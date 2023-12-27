@@ -3,7 +3,7 @@
 resource "aws_instance" "nat_instance" {
   ami           = "ami-0e64637f6498ed00f"
   instance_type = "t2.micro"
-  key_name      = "neu"
+  key_name      = var.user_name       #"neu"
   source_dest_check = false // Kaynak/Hedef doğrulama ayarını durdurma (stop) işlemi
   
   subnet_id     = aws_subnet.proje2_public_subnet[0].id

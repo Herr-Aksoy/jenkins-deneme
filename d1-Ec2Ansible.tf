@@ -1,12 +1,12 @@
 
 
                                                         ## Burasi Ansible Ec2 user datayi degistirmek icin
+                                                            # private_ip_value = aws_instance.example.private_ip
+                                                            # private_key_content = local.my_private_key_content
 
 data "template_file" "user_data_template" {
   template = file("./s3_Website/ansible_userdata.sh")
   vars = {
-    # private_ip_value = aws_instance.example.private_ip
-    # private_key_content = local.my_private_key_content
     pem_key = var.user_name
   }
 }

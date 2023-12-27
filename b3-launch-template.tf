@@ -28,7 +28,7 @@ resource "aws_launch_template" "proje2_launch_template" {
   tag_specifications {
     resource_type = "instance"
     tags = {
-      Name = "proje2_web_server"   #"WebApp${count.index + 1}"
+      Name = "proje2_web_server"   
     }
   }
 

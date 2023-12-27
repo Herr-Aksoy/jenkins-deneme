@@ -1,9 +1,10 @@
 
 
 resource "aws_autoscaling_group" "proje2_ASG" {
-  desired_capacity        = 1
-  min_size                = 1
-  max_size                = 2
+  name = "proje2_ASG"
+  desired_capacity        = 2
+  min_size                = 2
+  max_size                = 4
   #health_check_type       = "ELB"
   #health_check_grace_period = 300
 
@@ -26,11 +27,11 @@ resource "aws_autoscaling_group" "proje2_ASG" {
     create_before_destroy = true
   }
 
-  tag {
-    key                 = "Name"
-    value               = "proje2_ASG"
-    propagate_at_launch = true
-  }
+  # tag {                                       ## Ec2 isimleri buradan geliyor.
+  #   key                 = "Name"
+  #   value               = "proje2_ASG"      #"WebApp${count.index + 1}"
+  #   propagate_at_launch = true
+  # }
 
 }
 

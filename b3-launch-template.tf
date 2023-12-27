@@ -24,12 +24,11 @@ resource "aws_launch_template" "proje2_launch_template" {
     security_groups = [aws_security_group.proje2_EC2_Sec_Group.id]
   }
 
-  count                   = 4
 
   tag_specifications {
     resource_type = "instance"
     tags = {
-      Name = "WebApp${count.index + 1}"            #"proje2_web_server"
+      Name = "proje2_web_server"   #"WebApp${count.index + 1}"
     }
   }
 

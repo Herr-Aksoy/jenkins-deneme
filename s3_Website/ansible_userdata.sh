@@ -49,7 +49,7 @@ EOF"
 
 
 
-chmod 400 ${pem_key}.pem
+chmod 400 {pem_key}.pem
 
 
 
@@ -71,12 +71,12 @@ chmod 400 ${pem_key}.pem
 
 
 
-# sudo bash -c "mkdir ${pem_key}.arkadas"
+# sudo bash -c "mkdir {pem_key}.arkadas"
 
-# sudo touch ${neyaptin}.asd      
+# sudo touch {neyaptin}.asd      
 
 # sudo mkdir manyak.txt                   ## Bu sekilde hepsini yapti
 
 # mkdir kanka.nt        
 
-# mkdir ${neyaptin}.nachte
+# mkdir {neyaptin}.nachte

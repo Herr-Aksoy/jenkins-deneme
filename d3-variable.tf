@@ -1,5 +1,5 @@
 variable "user_name" {
-  description = "Kullanıcı adı"
+  default = "ramo"         #description = "Kullanıcı adı"
 }
 
 # variable "region" {

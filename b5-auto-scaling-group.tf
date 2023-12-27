@@ -8,10 +8,20 @@ resource "aws_autoscaling_group" "proje2_ASG" {
   #health_check_type       = "ELB"
   #health_check_grace_period = 300
 
-  launch_template {
-    id      = aws_launch_template.proje2_launch_template[count.index].id
-    version = "$Latest"  # Kullanılacak sürüm numarası
+  dynamic "launch_template" {
+    for_each = { for index , value in aws_launch_template.proje2_launch_template : index => value }
+
+    content {
+      id      = launch_template.value.id
+      version = "$Latest"
+      # Diğer özellikler...
+    }
   }
+
+  # launch_template {
+  #   id      = aws_launch_template.proje2_launch_template.id
+  #   version = "$Latest"  # Kullanılacak sürüm numarası
+  # }
 
   vpc_zone_identifier = [
     aws_subnet.proje2_private_subnet[0].id,

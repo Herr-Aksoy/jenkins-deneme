@@ -1,26 +1,27 @@
 
 
-
-
-
-
-
-
-
-
-
 pipeline {
     agent any
-    tools {
-        terraform 'terraform'
-}
+
     stages {
-        
-        stage('Create Infrastructure for the App') {
+        stage('Create Infrastructure') {
             steps {
-                echo 'Creating Infrastructure for the App on AWS Cloud'
-                sh 'terraform init'
-                sh 'terraform apply --auto-approve'
+                script {
+                    echo 'Creating Infrastructure for the App on AWS Cloud'
+                    sh 'terraform init'
+                    sh 'terraform apply --auto-approve'
+                }
+            }
+        }
+
+        stage('Add NAT Instance to Private Route Table') {
+            steps {
+                script {
+                    def natInstanceId = sh(script: 'aws ec2 describe-instances --filters "Name=tag:Name,Values=Proje2 Nat Instance" --query "Reservations[*].Instances[*].[InstanceId]" --output text', returnStdout: true).trim()
+                    def privateRouteTableId = sh(script: 'aws ec2 describe-route-tables --filters "Name=tag:Name,Values=proje2-private-RT" --query "RouteTables[*].[RouteTableId]" --output text', returnStdout: true).trim()
+
+                    sh "aws ec2 associate-route-table --route-table-id ${privateRouteTableId} --instance-id ${natInstanceId}"
+                }
             }
         }
 
@@ -34,7 +35,6 @@ pipeline {
                 """
             }
         }
-
     }
 
     post {
@@ -48,7 +48,15 @@ pipeline {
         }
 
     }
-
 }
+
+
+
+
+
+
+
+
+
 
 

@@ -18,7 +18,7 @@ resource "aws_instance" "ornek" {
   key_name      = var.user_name  # Kullanmak istediğiniz key pair'ın adı
   user_data = data.template_file.user_data_template.rendered
   associate_public_ip_address = true
-  subnet_id     = aws_subnet.proje2_private_subnet[0].id
+  subnet_id     = aws_subnet.proje2_public_subnet[0].id
   vpc_security_group_ids = [aws_security_group.proje2_EC2_Sec_Group.id]
 
   tags = {

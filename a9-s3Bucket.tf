@@ -7,7 +7,7 @@ resource "aws_s3_bucket" "proje2blog" {
 
 resource "aws_s3_bucket" "proje2_awspublic_link" {
   bucket        = "proje2.awspublic.link"
-  # depends_on = [ aws_s3_bucket.proje2blog ]
+  depends_on = [ aws_s3_bucket.proje2blog ]
   force_destroy = true
 }
 
@@ -22,7 +22,7 @@ resource "aws_s3_bucket_ownership_controls" "example_awspublic_link" {
 
 resource "aws_s3_bucket_ownership_controls" "example_blog" {
   bucket = aws_s3_bucket.proje2blog.id
-  # depends_on = [ aws_s3_bucket.proje2blog ]
+  depends_on = [ aws_s3_bucket.proje2blog ]
 
   rule {
     object_ownership = "BucketOwnerPreferred"

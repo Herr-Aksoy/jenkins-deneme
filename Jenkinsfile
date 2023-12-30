@@ -19,9 +19,10 @@ pipeline {
                 script {
                     def natInstanceId = sh(script: 'aws ec2 describe-instances --filters "Name=tag:Name,Values=Proje2 Nat Instance" --query "Reservations[*].Instances[*].[InstanceId]" --output text', returnStdout: true).trim()
                     def privateRouteTableId = sh(script: 'aws ec2 describe-route-tables --filters "Name=tag:Name,Values=proje2-private-RT" --query "RouteTables[*].[RouteTableId]" --output text', returnStdout: true).trim()
+                    def vpcId = sh(script: 'aws ec2 describe-instances --filters "Name=tag:Name,Values=Proje2 Nat Instance" --query "Reservations[*].Instances[*].[VpcId]" --output text', returnStdout: true).trim()
 
                     sh """
-                    aws ec2 create-route --route-table-id ${privateRouteTableId} --destination-cidr-block 0.0.0.0/0 --instance-id ${natInstanceId}
+                    aws ec2 create-route --route-table-id ${privateRouteTableId} --destination-cidr-block 0.0.0.0/0 --instance-id ${natInstanceId} --vpc-id ${vpcId}
                     """
 
                 }

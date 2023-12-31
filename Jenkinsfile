@@ -32,7 +32,7 @@ pipeline {
                         privateIps += "${privateIp}\n"
                     }
 
-                    echo "Private IPs:\n${privateIps}" // IP adreslerini kontrol etmek için yazdırma
+                    echo "Private IPs:\n${privateIps}" 
                     writeFile file: '/home/jenkins/ip_addresses.txt', text: privateIps
                 }
             }
@@ -41,23 +41,19 @@ pipeline {
         stage('SSH ile Ansible EC2 Örneğine Bağlan') {
             steps {
                 script {
-                    def ansibleInstanceId = sh(
-                        script: 'aws ec2 describe-instances --filters "Name=tag:Name,Values=Ansible-instance" --query "Reservations[*].Instances[*].InstanceId" --output text',
-                        returnStdout: true
-                    ).trim()
+                    def awsCliCommand = """
+                    aws ec2 describe-instances --filters "Name=tag:Name,Values=Ansible-instance" --query "Reservations[*].Instances[*].PrivateIpAddress" --output text
+                    """
 
-                    def ansiblePrivateIp = sh(
-                        script: "aws ec2 describe-instances --instance-ids ${ansibleInstanceId} --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text",
-                        returnStdout: true
-                    ).trim()
+                    def privateIp = sh(script: awsCliCommand, returnStdout: true).trim()
 
                     sshagent(credentials: ['ramo.pem']) {
-                    // Ansible sunucusuna SSH ile bağlanma ve ramo.pem anahtarını kullanma
-                    sh "ssh -i  -o StrictHostKeyChecking=no ec2-user@${ansiblePrivateIp}"
+                    
+                    sh "ssh -i  -o StrictHostKeyChecking=no ec2-user@${privateIp}"
                     }
 
-                    // Jenkins sunucusundaki ip_addresses.txt dosyasını Ansible sunucusuna kopyalama
-                    sh "scp -i ./ramo.pem -o StrictHostKeyChecking=no /home/jenkins/ip_addresses.txt ec2-user@${ansiblePrivateIp}:/home/ec2-user/"
+                    
+                    sh "scp -i ./ramo.pem -o StrictHostKeyChecking=no /home/jenkins/ip_addresses.txt ec2-user@${privateIp}:/home/ec2-user/"
 
 
                 }
@@ -70,7 +66,7 @@ pipeline {
             steps {
                 script {
                     def ipAddresses = readFile '/home/ec2-user/ip_addresses.txt'
-                    echo "Updated IPs:\n${ipAddresses}" // Güncellenmiş IP adreslerini kontrol etmek için yazdırma
+                    echo "Updated IPs:\n${ipAddresses}" 
             
                     sh """
                     sed -i 's/IP1/${ipAddresses.split()[0]}/g' /home/ec2-user/inventory

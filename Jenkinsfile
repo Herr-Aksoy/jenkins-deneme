@@ -48,7 +48,7 @@ pipeline {
                     sh "touch ip_addresses.txt"
 
                     echo "Private IPs:\n${privateIps}" 
-                    writeFile file: 'ip_addresses.txt', text: privateIps.join('\n')
+                    writeFile file: '/home/jenkins/ip_addresses.txt', text: privateIps.join('\n')
                 }
             }
         }

@@ -27,23 +27,24 @@ pipeline {
             }
         }
 
-
         stage('Auto Scaling Grubundan Özel IP\'leri Al') {
             steps {
                 script {
-                    def instanceIds = sh(
-                        script: 'aws autoscaling describe-auto-scaling-instances --query "AutoScalingInstances[?AutoScalingGroupName==proje2_ASG].InstanceId" --output text',
+                    def privateIps = []
+
+                    def instances = sh(
+                        script: "aws autoscaling describe-auto-scaling-instances --query \"AutoScalingInstances[?AutoScalingGroupName=='proje2_ASG'].InstanceId\" --output text",
                         returnStdout: true
                     ).trim().split()
 
-                    def privateIps = []
-                    instanceIds.each { instanceId ->
-                        def privateIp = sh(
+                    instances.each { instanceId ->
+                        def result = sh(
                             script: "aws ec2 describe-instances --instance-ids ${instanceId} --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text",
                             returnStdout: true
                         ).trim()
-                        if (privateIp) {
-                            privateIps.add(privateIp)
+
+                        if (result && result != '') {
+                            privateIps.add(result)
                         }
                     }
 

@@ -32,7 +32,7 @@ pipeline {
                     }
 
                     echo "Private IPs:\n${privateIps}" // IP adreslerini kontrol etmek için yazdırma
-                    writeFile file: '/home/ec2-user/ip_addresses.txt', text: privateIps
+                    writeFile file: '/home/jenkins/ip_addresses.txt', text: privateIps
                 }
             }
         }
@@ -56,7 +56,7 @@ pipeline {
                     }
 
                     // Jenkins sunucusundaki ip_addresses.txt dosyasını Ansible sunucusuna kopyalama
-                    sh "scp -i ./ramo.pem -o StrictHostKeyChecking=no /home/ec2-user/ip_addresses.txt ec2-user@${ansiblePrivateIp}:/home/ec2-user/"
+                    sh "scp -i ./ramo.pem -o StrictHostKeyChecking=no /home/jenkins/ip_addresses.txt ec2-user@${ansiblePrivateIp}:/home/ec2-user/"
 
 
                 }

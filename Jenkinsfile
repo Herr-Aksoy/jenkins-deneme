@@ -16,11 +16,17 @@ pipeline {
 
         stage('Add NAT Instance to Private Route Table') {
             steps {
+                
                 script {
-                    def natInstanceId = sh(script: 'aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" "Name=tag:Name,Values=Proje2 Nat Instance" --query "Reservations[*].Instances[*].[InstanceId]" --output text', returnStdout: true).trim()
+                    aws ec2 describe-instances \
+                        --filters "Name=tag:Name,Values=Proje2 Nat Instance" "Name=instance-state-name,Values=running" \
+                        --query "Reservations[*].Instances[*].InstanceId" \
+                        --output text
+                    def natInstanceId = sh(script: 'aws ec2 describe-instances --filters "Name=tag:Name,Values=Proje2 Nat Instance" "Name=instance-state-name,Values=running" --query "Reservations[*].Instances[*].[InstanceId]" --output text', returnStdout: true).trim()
                     def privateRouteTableId = sh(script: 'aws ec2 describe-route-tables --filters "Name=tag:Name,Values=proje2-private-RT" --query "RouteTables[*].[RouteTableId]" --output text', returnStdout: true).trim()
 
-                    sh "aws ec2 associate-route-table --route-table-id ${privateRouteTableId} --instance-id ${natInstanceId}"
+                    sh "aws create-route --route-table-id ${privateRouteTableId} --destination-cidr-block 0.0.0.0/0 --instance-id ${natInstanceId}"
+
                 }
             }
         }

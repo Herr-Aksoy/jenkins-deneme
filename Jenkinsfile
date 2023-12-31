@@ -63,6 +63,7 @@ pipeline {
                         --query "Reservations[*].Instances[*].PrivateIpAddress" 
                         --output text
                     """
+                    def privateIp = sh(script: awsCliCommand, returnStdout: true).trim()
                     
                     sh "scp -i ramo.pem -o StrictHostKeyChecking=no ip_addresses.txt ec2-user@${privateIp}:/home/ec2-user/"
 

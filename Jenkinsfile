@@ -14,20 +14,73 @@ pipeline {
             }
         }
 
-        stage('Add NAT Instance to Private Route Table') {
+        stage('Auto Scaling Grubundan Özel IP\'leri Al') {
             steps {
                 script {
-                    def natInstanceId = sh(script: 'aws ec2 describe-instances --filters "Name=tag:Name,Values=Proje2 Nat Instance" "Name=instance-state-name,Values=running" --query "Reservations[*].Instances[*].[InstanceId]" --output text', returnStdout: true).trim()
-                    def privateRouteTableId = sh(script: 'aws ec2 describe-route-tables --filters "Name=tag:Name,Values=proje2-private-RT" --query "RouteTables[*].[RouteTableId]" --output text', returnStdout: true).trim()
+                    def instanceIds = sh(
+                        script: 'aws autoscaling describe-auto-scaling-instances --query "AutoScalingInstances[?AutoScalingGroupName==proje2_ASG].InstanceId" --output text',
+                        returnStdout: true
+                    ).trim().split()
 
-                    sh """
-                    aws ec2 create-route --route-table-id ${privateRouteTableId} --destination-cidr-block 0.0.0.0/0 --instance-id ${natInstanceId} 
-                    """
+                    def privateIps = ""
+                    instanceIds.each { instanceId ->
+                        def privateIp = sh(
+                            script: "aws ec2 describe-instances --instance-ids ${instanceId} --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text",
+                            returnStdout: true
+                        ).trim()
+                        privateIps += "${privateIp}\n"
+                    }
 
+                    echo "Private IPs:\n${privateIps}" // IP adreslerini kontrol etmek için yazdırma
+                    writeFile file: '/home/ec2-user/ip_addresses.txt', text: privateIps
                 }
             }
         }
 
+        stage('SSH ile Ansible EC2 Örneğine Bağlan') {
+            steps {
+                script {
+                    def ansibleInstanceId = sh(
+                        script: 'aws ec2 describe-instances --filters "Name=tag:Name,Values=Ansible-instance" --query "Reservations[*].Instances[*].InstanceId" --output text',
+                        returnStdout: true
+                    ).trim()
+
+                    def ansiblePrivateIp = sh(
+                        script: "aws ec2 describe-instances --instance-ids ${ansibleInstanceId} --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text",
+                        returnStdout: true
+                    ).trim()
+
+                    sshagent(credentials: ['ramo.pem']) {
+                    // Ansible sunucusuna SSH ile bağlanma ve ramo.pem anahtarını kullanma
+                    sh "ssh -i  -o StrictHostKeyChecking=no ec2-user@${ansiblePrivateIp}"
+                    }
+
+                    // Jenkins sunucusundaki ip_addresses.txt dosyasını Ansible sunucusuna kopyalama
+                    sh "scp -i ./ramo.pem -o StrictHostKeyChecking=no /home/ec2-user/ip_addresses.txt ec2-user@${ansiblePrivateIp}:/home/ec2-user/"
+
+
+                }
+            }
+        }
+    
+
+
+        stage('Inventory Dosyasını Güncelle') {
+            steps {
+                script {
+                    def ipAddresses = readFile '/home/ec2-user/ip_addresses.txt'
+                    echo "Updated IPs:\n${ipAddresses}" // Güncellenmiş IP adreslerini kontrol etmek için yazdırma
+            
+                    sh """
+                    sed -i 's/IP1/${ipAddresses.split()[0]}/g' /home/ec2-user/inventory
+                    sed -i 's/IP2/${ipAddresses.split()[1]}/g' /home/ec2-user/inventory
+                    """
+                }
+            }
+        }
+
+        
+        
         stage('Destroy the infrastructure'){
             steps{
                 timeout(time:5, unit:'DAYS'){

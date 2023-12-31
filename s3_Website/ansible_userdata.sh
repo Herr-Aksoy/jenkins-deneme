@@ -15,8 +15,8 @@ EOF"
 
 sudo bash -c "cat << EOF > /home/ec2-user/inventory
 [webservers]
-node1 ansible_host='Ec2 privat ip yazilacak' ansible_user=ubuntu
-node2 ansible_host='Ec2 privat ip yazilacak' ansible_user=ubuntu
+node1 ansible_host=IP1 ansible_user=ubuntu
+node2 ansible_host=IP2 ansible_user=ubuntu
 
 [all:vars]
 ansible_ssh_private_key_file=/home/ec2-user/${pem_key}.pem

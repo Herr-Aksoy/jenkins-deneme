@@ -25,31 +25,31 @@ pipeline {
             }
         }
 
-        // stage('Auto Scaling Grubundan Özel IP\'leri Al') {
-        //     steps {
-        //         script {
+        stage('Auto Scaling Grubundan Özel IP\'leri Al') {
+            steps {
+                script {
                     
-        //             def instanceIds = sh(
-        //                 script: 'aws autoscaling describe-auto-scaling-instances --query "AutoScalingInstances[?AutoScalingGroupName==proje2_ASG].InstanceId" --output text',
-        //                 returnStdout: true
-        //             ).trim().split()
+                    def instanceIds = sh(
+                        script: 'aws autoscaling describe-auto-scaling-instances --query "AutoScalingInstances[?AutoScalingGroupName==proje2_ASG].InstanceId" --output text',
+                        returnStdout: true
+                    ).trim().split()
 
-        //             def privateIps = []
-        //             instanceIds.each { instanceId ->
-        //                  def privateIp = sh(
-        //                      script: "aws ec2 describe-instances --instance-ids ${instanceId} --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text",
-        //                      returnStdout: true
-        //                  ).trim()
-        //                  privateIps.add(privateIp)
-        //             }
+                    def privateIps = []
+                    instanceIds.each { instanceId ->
+                         def privateIp = sh(
+                             script: "aws ec2 describe-instances --instance-ids ${instanceId} --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text",
+                             returnStdout: true
+                         ).trim()
+                         privateIps.add(privateIp)
+                    }
 
-        //             sh "touch ip_addresses.txt"
+                    sh "touch ip_addresses.txt"
 
-        //             echo "Private IPs:\n${privateIps}" 
-        //             writeFile file: 'ip_addresses.txt', text: privateIps.join('\n')
-        //         }
-        //     }
-        // }
+                    echo "Private IPs:\n${privateIps}" 
+                    writeFile file: 'ip_addresses.txt', text: privateIps.join('\n')
+                }
+            }
+        }
     
 
         stage('SSH ile Ansible EC2 Örneğine Bağlan') {

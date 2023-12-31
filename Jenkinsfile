@@ -64,7 +64,7 @@ pipeline {
                         --output text
                     """
                     
-                    sh "scp -i ./ramo.pem -o StrictHostKeyChecking=no ip_addresses.txt ec2-user@${privateIp}:/home/ec2-user/"
+                    sh "scp -i ramo.pem -o StrictHostKeyChecking=no ip_addresses.txt ec2-user@${privateIp}:/home/ec2-user/"
 
 
                 }
@@ -80,8 +80,8 @@ pipeline {
                     echo "Updated IPs:\n${ipAddresses}" 
             
                     sh """
-                    sed -i ./ramo.pem ec2-user@${privateIp} 's/IP1/${ipAddresses.split()[0]}/g' /home/ec2-user/inventory
-                    sed -i ./ramo.pem ec2-user@${privateIp} 's/IP2/${ipAddresses.split()[1]}/g' /home/ec2-user/inventory
+                    sed -i ramo.pem ec2-user@${privateIp} 's/IP1/${ipAddresses.split()[0]}/g' /home/ec2-user/inventory
+                    sed -i ramo.pem ec2-user@${privateIp} 's/IP2/${ipAddresses.split()[1]}/g' /home/ec2-user/inventory
                     """
                 }
             }

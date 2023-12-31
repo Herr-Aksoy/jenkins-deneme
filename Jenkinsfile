@@ -17,6 +17,7 @@ pipeline {
         stage('Auto Scaling Grubundan Özel IP\'leri Al') {
             steps {
                 script {
+                    sh "touch /home/jenkins/ip_addresses.txt"
                     def instanceIds = sh(
                         script: 'aws autoscaling describe-auto-scaling-instances --query "AutoScalingInstances[?AutoScalingGroupName==proje2_ASG].InstanceId" --output text',
                         returnStdout: true

@@ -23,20 +23,21 @@ pipeline {
                         returnStdout: true
                     ).trim().split()
 
-                    def privateIps = ""
+                    def privateIps = []
                     instanceIds.each { instanceId ->
-                        def privateIp = sh(
-                            script: "aws ec2 describe-instances --instance-ids ${instanceId} --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text",
-                            returnStdout: true
-                        ).trim()
-                        privateIps += "${privateIp}\n"
+                         def privateIp = sh(
+                             script: "aws ec2 describe-instances --instance-ids ${instanceId} --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text",
+                             returnStdout: true
+                         ).trim()
+                         privateIps.add(privateIp)
                     }
 
                     echo "Private IPs:\n${privateIps}" 
-                    writeFile file: '/home/jenkins/ip_addresses.txt', text: privateIps
+                    writeFile file: '/home/jenkins/ip_addresses.txt', text: privateIps.join('\n')
                 }
             }
         }
+    
 
         stage('SSH ile Ansible EC2 Örneğine Bağlan') {
             steps {

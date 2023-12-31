@@ -14,29 +14,42 @@ pipeline {
             }
         }
 
-        stage('Auto Scaling Grubundan Özel IP\'leri Al') {
+        stage('Add NAT Instance to Private Route Table') {
             steps {
                 script {
-                    sh "touch /home/jenkins/ip_addresses.txt"
-                    def instanceIds = sh(
-                        script: 'aws autoscaling describe-auto-scaling-instances --query "AutoScalingInstances[?AutoScalingGroupName==proje2_ASG].InstanceId" --output text',
-                        returnStdout: true
-                    ).trim().split()
+                    def natInstanceId = sh(script: 'aws ec2 describe-instances --filters "Name=tag:Name,Values=Proje2 Nat Instance" --query "Reservations[*].Instances[*].[InstanceId]" --output text', returnStdout: true).trim()
+                    def privateRouteTableId = sh(script: 'aws ec2 describe-route-tables --filters "Name=tag:Name,Values=proje2-private-RT" --query "RouteTables[*].[RouteTableId]" --output text', returnStdout: true).trim()
 
-                    def privateIps = []
-                    instanceIds.each { instanceId ->
-                         def privateIp = sh(
-                             script: "aws ec2 describe-instances --instance-ids ${instanceId} --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text",
-                             returnStdout: true
-                         ).trim()
-                         privateIps.add(privateIp)
-                    }
-
-                    echo "Private IPs:\n${privateIps}" 
-                    writeFile file: '/home/jenkins/ip_addresses.txt', text: privateIps.join('\n')
+                    sh "aws ec2 associate-route-table --route-table-id ${privateRouteTableId} --instance-id ${natInstanceId}"
                 }
             }
         }
+
+        // stage('Auto Scaling Grubundan Özel IP\'leri Al') {
+        //     steps {
+        //         script {
+                    
+        //             def instanceIds = sh(
+        //                 script: 'aws autoscaling describe-auto-scaling-instances --query "AutoScalingInstances[?AutoScalingGroupName==proje2_ASG].InstanceId" --output text',
+        //                 returnStdout: true
+        //             ).trim().split()
+
+        //             def privateIps = []
+        //             instanceIds.each { instanceId ->
+        //                  def privateIp = sh(
+        //                      script: "aws ec2 describe-instances --instance-ids ${instanceId} --query 'Reservations[0].Instances[0].PrivateIpAddress' --output text",
+        //                      returnStdout: true
+        //                  ).trim()
+        //                  privateIps.add(privateIp)
+        //             }
+
+        //             sh "touch ip_addresses.txt"
+
+        //             echo "Private IPs:\n${privateIps}" 
+        //             writeFile file: 'ip_addresses.txt', text: privateIps.join('\n')
+        //         }
+        //     }
+        // }
     
 
         stage('SSH ile Ansible EC2 Örneğine Bağlan') {
@@ -48,16 +61,8 @@ pipeline {
                         --query "Reservations[*].Instances[*].PrivateIpAddress" 
                         --output text
                     """
-
-                    def privateIp = sh(script: awsCliCommand, returnStdout: true).trim()
-
-                    sshagent(credentials: ['ramo.pem']) {
                     
-                    sh "ssh -i  -o StrictHostKeyChecking=no ec2-user@${privateIp}"
-                    }
-
-                    
-                    sh "scp -i ./ramo.pem -o StrictHostKeyChecking=no /home/jenkins/ip_addresses.txt ec2-user@${privateIp}:/home/ec2-user/"
+                    sh "scp -i ./ramo.pem -o StrictHostKeyChecking=no ip_addresses.txt ec2-user@${privateIp}:/home/ec2-user/"
 
 
                 }
@@ -69,12 +74,12 @@ pipeline {
         stage('Inventory Dosyasını Güncelle') {
             steps {
                 script {
-                    def ipAddresses = readFile '/home/ec2-user/ip_addresses.txt'
+                    def ipAddresses = readFile 'ip_addresses.txt'
                     echo "Updated IPs:\n${ipAddresses}" 
             
                     sh """
-                    sed -i 's/IP1/${ipAddresses.split()[0]}/g' /home/ec2-user/inventory
-                    sed -i 's/IP2/${ipAddresses.split()[1]}/g' /home/ec2-user/inventory
+                    sed -i ./ramo.pem ec2-user@${privateIp} 's/IP1/${ipAddresses.split()[0]}/g' /home/ec2-user/inventory
+                    sed -i ./ramo.pem ec2-user@${privateIp} 's/IP2/${ipAddresses.split()[1]}/g' /home/ec2-user/inventory
                     """
                 }
             }

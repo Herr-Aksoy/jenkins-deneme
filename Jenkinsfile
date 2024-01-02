@@ -15,15 +15,11 @@ pipeline {
                     echo 'Creating Infrastructure for the App on AWS Cloud'
                     sh 'terraform init'
                     sh 'terraform apply --auto-approve'
-                }
-            }
 
-            steps[
-                script {
-                    def currentDir = sh(script: 'pwd', returnStdout: true).trim()
+                    currentDir = sh(script: 'pwd', returnStdout: true).trim()
                     echo "Current directory: ${currentDir}"
                 }
-            ]
+            }
         }
 
         stage('Add NAT Instance to Private Route Table') {

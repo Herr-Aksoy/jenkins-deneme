@@ -59,13 +59,12 @@ pipeline {
         stage('SSH ile Ansible EC2 Örneğine Bağlan') {
             steps {
                 script {
-                    def awsCliCommand = """
+                    def privateIp = """
                         aws ec2 describe-instances 
                         --filters "Name=tag:Name,Values=Ansible-instance" "Name=instance-state-name,Values=running" 
                         --query "Reservations[*].Instances[*].PrivateIpAddress" 
                         --output text
                     """
-                    def privateIp = sh(script: awsCliCommand, returnStdout: true).trim()
 
                     echo "Private IP for Ansible EC2: ${privateIp}"
                     

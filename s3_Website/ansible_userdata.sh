@@ -4,25 +4,25 @@ yum update -y
 sudo amazon-linux-extras install ansible2 -y
 
 # bunlari inventory file olusturup icerisine  yazarak yapmak daha mantikli.
-sudo bash -c "cat << EOF > /home/ec2-user/ansible.cfg
+cat << EOF > /home/ec2-user/ansible.cfg
 [defaults]
 host_key_checking = False
 inventory = inventory
 deprecation_warnings=False
 interpreter_python=auto_silent
-EOF"
+EOF
 
 
-sudo bash -c "cat << EOF > /home/ec2-user/inventory
+cat << EOF > /home/ec2-user/inventory
 [webservers]
 node1 ansible_host=IP1 ansible_user=ubuntu
 node2 ansible_host=IP2 ansible_user=ubuntu
 
 [all:vars]
 ansible_ssh_private_key_file=/home/ec2-user/${pem_key}.pem
-EOF"
+EOF
 
-sudo bash -c 'cat << EOF > /home/ec2-user/app_playbook.yml
+cat << EOF > /home/ec2-user/app_playbook.yml
 
 ---
 - name: Proje2-Team Uygulaması Kurulumu
@@ -64,7 +64,7 @@ sudo bash -c 'cat << EOF > /home/ec2-user/app_playbook.yml
         - "python3 manage.py migrate"
         - "python3 manage.py runserver 0.0.0.0:80"
 
-EOF'
+EOF
 
 sudo bash -c "cat << EOF > /home/ec2-user/${pem_key}.pem
 ${private_key_content}

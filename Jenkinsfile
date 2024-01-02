@@ -5,10 +5,6 @@ pipeline {
 
     stages {
 
-        def currentDir
-
-
-
         stage('Create Infrastructure') {
             steps {
                 script {
@@ -16,7 +12,7 @@ pipeline {
                     sh 'terraform init'
                     sh 'terraform apply --auto-approve'
 
-                    currentDir = sh(script: 'pwd', returnStdout: true).trim()
+                    def currentDir = sh(script: 'pwd', returnStdout: true).trim()
                     echo "Current directory: ${currentDir}"
                 }
             }

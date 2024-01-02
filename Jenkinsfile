@@ -4,6 +4,11 @@ pipeline {
     agent any
 
     stages {
+
+        def currentDir
+
+
+
         stage('Create Infrastructure') {
             steps {
                 script {
@@ -12,6 +17,13 @@ pipeline {
                     sh 'terraform apply --auto-approve'
                 }
             }
+
+            steps[
+                script {
+                    def currentDir = sh(script: 'pwd', returnStdout: true).trim()
+                    echo "Current directory: ${currentDir}"
+                }
+            ]
         }
 
         stage('Add NAT Instance to Private Route Table') {
@@ -68,7 +80,7 @@ pipeline {
 
                     echo "Private IP for Ansible EC2: ${privateIp}"
                     
-                    sh "scp -i ramo.pem -o StrictHostKeyChecking=no ip_addresses.txt ec2-user@${privateIp}:/home/ec2-user/"
+                    sh "scp -i ${currentDir}/ramo.pem -o StrictHostKeyChecking=no ip_addresses.txt ec2-user@${privateIp}:/home/ec2-user/"
 
 
                 }
